@@ -64,9 +64,10 @@ int main()
       if(iteration >= 5)
         end = true;
     }while(!end); 
+
+    SDL_DestroyRenderer(renderer);
   }
 
-  SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
   return 0;
