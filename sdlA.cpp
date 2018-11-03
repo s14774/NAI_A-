@@ -1,14 +1,26 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
+#define windowSizeX 1000
+#define windowSizeY 1000
+
+#define fieldX 10
+#define fieldY 10
+
+#define distanceBetweenCells 3
+
+bool isPointInsideGrid(int x, int y){
+  return (x >= 0) && (x < fieldX) && (y >= 0) && (y < fieldY);
+}
+
+bool isPointNotBlocked(grid[fieldX][fieldY], int x, int y){
+  return (grid[x][y] == 0);
+}
+
+
+
 int main()
 {
-  int windowSizeX = 1000;
-  int windowSizeY = 1000;
-
-  int fieldX = 10;
-  int fieldY = 10;
-
   bool end = false;
   int iteration = 0;
 
@@ -27,23 +39,23 @@ int main()
   }
   if (window == NULL)
   {
-      printf("SDL_Error: %s\n", SDL_GetError());
+    printf("SDL_Error: %s\n", SDL_GetError());
   }
   else{
     SDL_Renderer *renderer;
     renderer = SDL_CreateRenderer(window, -1, 0);
 
     //array initialization
-    int array[fieldX][fieldY];
+    int grid[fieldX][fieldY];
     for(int x = 0; x < fieldX; x++){
       for(int y = 0; y < fieldY; y++){
-        array[x][y] = 0;
+        grid[x][y] = 0;
       }
     }
 
     do{
       printf("DO %d!\n",++iteration);
-      SDL_SetRenderDrawColor(renderer,0,0,0,255);
+      SDL_SetRenderDrawColor(renderer,20,30,55,255);
       SDL_RenderClear(renderer);
       SDL_SetRenderDrawColor(renderer,255,255,255,255);
       for(int x = 1; x < fieldX; x++){
