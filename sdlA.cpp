@@ -1,5 +1,7 @@
-#include <SDL2/SDL.h>
-#include <stdio.h>
+#include<SDL2/SDL.h>
+#include<stdio.h>
+#include<bits/stdc++.h> 
+using namespace std; 
 
 #define windowSizeX 1000
 #define windowSizeY 1000
@@ -9,15 +11,30 @@
 
 #define distanceBetweenCells 3
 
+// <x, y>
+typedef pair<int, int> Point;
+// <f, <x, y>>
+// f = g + h
+// g(Point) = distance(start, Point)
+// h(Point) = expected distance (Point, end)
+typedef pair<double, pair<int, int>> fPoint; 
+
 bool isPointInsideGrid(int x, int y){
   return (x >= 0) && (x < fieldX) && (y >= 0) && (y < fieldY);
 }
 
-bool isPointNotBlocked(grid[fieldX][fieldY], int x, int y){
+bool isPointInsideGrid(pair<int, int> p){
+  //return (x >= 0) && (x < fieldX) && (y >= 0) && (y < fieldY);
+  return false;
+}
+
+bool isPointNotBlocked(int grid[fieldX][fieldY], int x, int y){
   return (grid[x][y] == 0);
 }
 
+bool isPointDestination(){
 
+}
 
 int main()
 {
@@ -73,7 +90,7 @@ int main()
       SDL_RenderPresent(renderer);
 
       SDL_Delay(1000);
-      if(iteration >= 5)
+      if(iteration >= 2)
         end = true;
     }while(!end); 
 
