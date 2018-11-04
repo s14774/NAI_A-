@@ -24,8 +24,7 @@ bool isPointInsideGrid(int x, int y){
 }
 
 bool isPointInsideGrid(std::pair<int, int> p){
-  //return (x >= 0) && (x < fieldX) && (y >= 0) && (y < fieldY);
-  return false;
+  return (p.first >= 0) && (p.first < fieldX) && (p.second >= 0) && (p.second < fieldY)
 }
 
 bool isPointNotBlocked(int grid[fieldX][fieldY], int x, int y){
