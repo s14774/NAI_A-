@@ -1,7 +1,7 @@
 #include<SDL2/SDL.h>
 #include<stdio.h>
 #include<bits/stdc++.h> 
-using namespace std; 
+// using namespace std; 
 
 #define windowSizeX 1000
 #define windowSizeY 1000
@@ -12,18 +12,18 @@ using namespace std;
 #define distanceBetweenCells 3
 
 // <x, y>
-typedef pair<int, int> Point;
+typedef std::pair<int, int> Point;
 // <f, <x, y>>
 // f = g + h
 // g(Point) = distance(start, Point)
 // h(Point) = expected distance (Point, end)
-typedef pair<double, pair<int, int>> fPoint; 
+typedef std::pair<double, std::pair<int, int>> fPoint; 
 
 bool isPointInsideGrid(int x, int y){
   return (x >= 0) && (x < fieldX) && (y >= 0) && (y < fieldY);
 }
 
-bool isPointInsideGrid(pair<int, int> p){
+bool isPointInsideGrid(std::pair<int, int> p){
   //return (x >= 0) && (x < fieldX) && (y >= 0) && (y < fieldY);
   return false;
 }
