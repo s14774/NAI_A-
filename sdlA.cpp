@@ -100,6 +100,22 @@ void LineToIntArray(std::string s, int* array){
   array[arrayIterator]=tempValu;
 }
 
+int CSVErrorFormat(){
+  printf("Wrong format of file!\n"
+    "X,Y size of board\n"
+    "X,Y coordinates of start\n"
+    "X,Y coordinates of end\n"
+    "X rows x Y lines coma separated numbers:\n"
+    "0: Free space\n"
+    "1: Wall\n");
+  return 1;
+}
+
+int CSVErrorGridSize(){
+  printf("Grid size should be {2,2}<={x,y}<={400,400}.\n");
+  return 1;
+}
+
 int main(int argc, char* argv[])
 {
   if (argc != 2) {
@@ -124,29 +140,25 @@ int main(int argc, char* argv[])
   int comas = countCharQuantity(line,',');
   //For first line we should get x,y pair
   if(comas != 1){
-    printf("Wrong format of file!\n1.X,Y size of board\n2.X,Y of start\n3.X,Y of end\nXxY numbers declaring data\nUsage: %s filename.csv\n",argv[0]);
-    return 1;
+    return CSVErrorFormat();
   }
-  int table[comas+1];
+  int *table = new int[comas+1];
   LineToIntArray(line,table);
   if(table[0] < 2 || table[0] > 400 || table[1]<2 || table[1]>400){
-    printf("Table size 2<=x,y<=400");
-    return 1;
+    return CSVErrorGridSize();
   }
   int fieldX = table[0];
   int fieldY = table[1];
 
   //Get X,Y start point
   if (! file.good()){
-    printf("Wrong format of file!\nUsage: %s filename.csv\n",argv[0]);
-    return 1;
+    return CSVErrorFormat();
   }
   getline (file,line);
   comas = countCharQuantity(line,',');
   //For second line we should get x,y pair
   if(comas != 1){
-    printf("Wrong format of file!\n1.X,Y size of board\n2.X,Y of start\n3.X,Y of end\nXxY numbers declaring data\nUsage: %s filename.csv\n",argv[0]);
-    return 1;
+    return CSVErrorFormat();
   }
   LineToIntArray(line,table);
   Point startPoint;
@@ -155,39 +167,59 @@ int main(int argc, char* argv[])
 
   //Get X,Y end point
   if (! file.good()){
-    printf("Wrong format of file!\nUsage: %s filename.csv\n",argv[0]);
-    return 1;
+    return CSVErrorFormat();
   }
   getline (file,line);
   comas = countCharQuantity(line,',');
   //For first line we should get x,y pair
   if(comas != 1){
-    printf("Wrong format of file!\n1.X,Y size of board\n2.X,Y of start\n3.X,Y of end\nXxY numbers declaring data\nUsage: %s filename.csv\n",argv[0]);
-    return 1;
+    return CSVErrorFormat();
   }
   LineToIntArray(line,table);
   Point endPoint;
   endPoint.x = table[0];
   endPoint.y = table[1];
 
-  Point field
+  Point grid[fieldX][fieldY];
+
+  // delete[] table;
+  // int table[fieldY];
+  table = new int[fieldY];
+  for(int x = 0; x < fieldX; x++){
+    if (! file.good()){
+      return CSVErrorFormat();
+    }
+    getline (file,line);
+    comas = countCharQuantity(line,',');
+    //For first line we should get x,y pair
+    if(comas != fieldY - 1){
+      return CSVErrorFormat();
+    }
+    LineToIntArray(line,table);
+    for(int y = 0; y < fieldY; y++){
+      if(table[y] == 1 || table[y] == 0){
+        grid[x][y].status = table[y];
+      }
+    }
+  }
+
+  //Start point to grid
+  grid[startPoint.x][startPoint.y].status = 3;
+  //End point to grid
+  grid[endPoint.x][endPoint.y].status = 4;
 
   //Raport
   printf("B: %d x %d\n",fieldX,fieldY);
   printf("S: %d x %d\n",startPoint.x,startPoint.y);
   printf("E: %d x %d\n",endPoint.x,endPoint.y);
+  for(int x = 0; x < fieldX; x++){
+    for(int y = 0; y < fieldY; y++){
+      printf("%d ",grid[x][y].status);
+    }
+    printf("\n");
+  }
 
-return 0;
-
-  // while ( file.good() )
-  // {
-  //   getline (file,line);
-  //   std::cout << line << std::endl;
-  // }
   file.close();
-
-  Point qdw[400][400];
-  qdw[50][50].x = 4;
 
   bool end = false;
   int iteration = 0;
