@@ -9,7 +9,7 @@
 // #define distanceBetweenCells 2
 
 // // <x, y>
-// typedef std::pair<int, int> Point;
+typedef std::pair<int, int> Coordinates;
 // // <f, <x, y>>
 // // f = g + h
 // // g(Point) = distance(start, Point)
@@ -29,7 +29,7 @@ struct Point {
   int parentX, parentY;
   // 0 = empty space
   // 1 = wall
-  // 2 = visited
+  // 2 = open
   // 3 = start
   // 4 = end
   int status;
@@ -53,11 +53,35 @@ bool isPointNotBlocked(int **grid, int x, int y){
 
 bool isPointDestination(){}
 
-void aStarSearchNextMove(Point p, Point destination, int fieldX, int fieldY){
-  if(!isPointInsideGrid(p, fieldX, fieldY)){
+int aStarSearchNextMove(Point **grid, Point destination, std::vector<Coordinates> openList, int fieldX, int fieldY){
+
+  if(openList.size() == 0 ){
+    return 1;
+  }
+
+  //Get Point from openList with lowest f param.
+  Coordinates pointWithLowestF = openList[0];
+  int n = 0;
+  for(int i=1; i<openList.size(); i++){
+    if(grid[openList[i].first][openList[i].second].f < grid[pointWithLowestF.first][pointWithLowestF.second].f){
+      pointWithLowestF = openList[i];
+      n = i;
+    }
+  }
+  
+  //Remove this point from openList
+  openList.erase(openList.begin() + n);
+
+
+
+
+
+
+  if(!isPointInsideGrid(grid[x][y], fieldX, fieldY)){
     printf("ERR: Point is outside field!");
     return;
   }
+
 
 
 }
@@ -270,6 +294,8 @@ int main(int argc, char* argv[])
       }
     }
 
+    std::vector<Coordinates> openList; 
+
     do{
       printf("DO %d!\n",++iteration);
       SDL_SetRenderDrawColor(renderer,20,30,55,255);
@@ -290,7 +316,9 @@ int main(int argc, char* argv[])
 
       SDL_RenderPresent(renderer);
 
-      SDL_Delay(5000);
+      aStarSearchNextMove();
+
+      SDL_Delay(1000);
       if(iteration >= 1)
         end = true;
     }while(!end); 
