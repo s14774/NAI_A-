@@ -6,7 +6,7 @@
 #define windowSizeX 800
 #define windowSizeY 800
 
-#define distanceBetweenCells 10
+// #define distanceBetweenCells 2
 
 // // <x, y>
 // typedef std::pair<int, int> Point;
@@ -245,6 +245,7 @@ int main(int argc, char* argv[])
     printf("SDL_Error: %s\n", SDL_GetError());
   }
   else{
+    int distanceBetweenCells = windowSizeX / (fieldX * 10);
     SDL_Renderer *renderer;
     renderer = SDL_CreateRenderer(window, -1, 0);
 
@@ -252,7 +253,7 @@ int main(int argc, char* argv[])
     const int fieldWidth = (windowSizeX-(distanceBetweenCells*(fieldX+1)))/fieldX;
     const int fieldHeight = (windowSizeY-(distanceBetweenCells*(fieldY+1)))/fieldY;
 
-    printf("W: %d, H: %d\n",fieldWidth,fieldHeight);
+    // printf("W: %d, H: %d\n",fieldWidth,fieldHeight);
     int sx,sy;
     for(int x = 0; x < fieldX; x++){
       for(int y = 0; y < fieldY; y++){
