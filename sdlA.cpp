@@ -271,14 +271,17 @@ int main(int argc, char* argv[])
       printf("DO %d!\n",++iteration);
       SDL_SetRenderDrawColor(renderer,20,30,55,255);
       SDL_RenderClear(renderer);
-      SDL_SetRenderDrawColor(renderer,255,255,255,255);
 
       for(int x = 0; x < fieldX; x++){
         for(int y = 0; y < fieldY; y++){
-          //printf("X:%d Y:%d fieldX:%d %d %d %d %d\n",x,y,fieldX,x*windowSizeX/fieldX,0,0,0);
+          switch(grid[x][y].status){
+            case 0: SDL_SetRenderDrawColor(renderer,255,255,255,255); break;
+            case 1: SDL_SetRenderDrawColor(renderer,0,0,0,255); break;
+            case 2: SDL_SetRenderDrawColor(renderer,255,255,0,255); break;
+            case 3: SDL_SetRenderDrawColor(renderer,0,255,0,255); break;
+            case 4: SDL_SetRenderDrawColor(renderer,0,0,255,255); break;
+          }
           SDL_RenderFillRect(renderer,&Rect[x][y]);
-          // SDL_RenderDrawLine(renderer,x*windowSizeX/fieldX,0,x*windowSizeX/fieldX,windowSizeY);
-          // SDL_RenderDrawLine(renderer,0,y*windowSizeY/fieldY,windowSizeX,y*windowSizeY/fieldY);
         }
       }
 
