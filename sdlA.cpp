@@ -200,6 +200,9 @@ int main(int argc, char* argv[])
       if(table[y] == 1 || table[y] == 0){
         grid[x][y].status = table[y];
       }
+      else{
+        return CSVErrorFormat();
+      }
     }
   }
 
