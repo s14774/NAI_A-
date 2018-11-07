@@ -3,10 +3,10 @@
 #include<bits/stdc++.h> 
 // using namespace std; 
 
-#define windowSizeX 1000
-#define windowSizeY 1000
+#define windowSizeX 800
+#define windowSizeY 800
 
-#define distanceBetweenCells 3
+#define distanceBetweenCells 10
 
 // // <x, y>
 // typedef std::pair<int, int> Point;
@@ -248,11 +248,22 @@ int main(int argc, char* argv[])
     SDL_Renderer *renderer;
     renderer = SDL_CreateRenderer(window, -1, 0);
 
-    //array initialization
-    int grid[fieldX][fieldY];
+    SDL_Rect Rect[fieldX][fieldY];
+    const int fieldWidth = (windowSizeX-(distanceBetweenCells*(fieldX+1)))/fieldX;
+    const int fieldHeight = (windowSizeY-(distanceBetweenCells*(fieldY+1)))/fieldY;
+
+    printf("W: %d, H: %d\n",fieldWidth,fieldHeight);
+    int sx,sy;
     for(int x = 0; x < fieldX; x++){
       for(int y = 0; y < fieldY; y++){
-        grid[x][y] = 0;
+        sx = (distanceBetweenCells*(x+1))+(x*fieldWidth);
+        sy = (distanceBetweenCells*(y+1))+(y*fieldHeight);
+        printf("%d x %d {%d, %d, %d, %d}\n",x,y,sx,sy,fieldWidth,fieldHeight);
+        Rect[x][y] = {
+          sx,
+          sy,
+          fieldWidth,
+          fieldHeight};
       }
     }
 
@@ -261,13 +272,20 @@ int main(int argc, char* argv[])
       SDL_SetRenderDrawColor(renderer,20,30,55,255);
       SDL_RenderClear(renderer);
       SDL_SetRenderDrawColor(renderer,255,255,255,255);
-      for(int x = 1; x < fieldX; x++){
-        for(int y = 1; y < fieldY; y++){
-          // printf("X:%d Y:%d fieldX:%d %d %d %d %d\n",x,y,fieldX,x*windowSizeX/fieldX,0,0,0);
-          SDL_RenderDrawLine(renderer,x*windowSizeX/fieldX,0,x*windowSizeX/fieldX,windowSizeY);
-          SDL_RenderDrawLine(renderer,0,y*windowSizeY/fieldY,windowSizeX,y*windowSizeY/fieldY);
+
+      for(int x = 0; x < fieldX; x++){
+        for(int y = 0; y < fieldY; y++){
+          //printf("X:%d Y:%d fieldX:%d %d %d %d %d\n",x,y,fieldX,x*windowSizeX/fieldX,0,0,0);
+          SDL_RenderFillRect(renderer,&Rect[x][y]);
+          // SDL_RenderDrawLine(renderer,x*windowSizeX/fieldX,0,x*windowSizeX/fieldX,windowSizeY);
+          // SDL_RenderDrawLine(renderer,0,y*windowSizeY/fieldY,windowSizeX,y*windowSizeY/fieldY);
         }
       }
+
+      // SDL_RenderFillRect(renderer,&Rect[0][0]);      
+      // SDL_SetRenderDrawColor(renderer,0,255,255,255);
+      // SDL_RenderFillRect(renderer,&Rect[0][1]);
+
       // SDL_RenderDrawLine();
 
       //SDL_Rect Rect = {0,0,10,20};
@@ -275,8 +293,8 @@ int main(int argc, char* argv[])
 
       SDL_RenderPresent(renderer);
 
-      // SDL_Delay(500);
-      if(iteration >= 2)
+      SDL_Delay(2000);
+      if(iteration >= 1)
         end = true;
     }while(!end); 
 
