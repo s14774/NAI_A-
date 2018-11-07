@@ -246,19 +246,25 @@ int main(int argc, char* argv[])
   }
   else{
     int distanceBetweenCells = windowSizeX / (fieldX * 10);
+
     SDL_Renderer *renderer;
     renderer = SDL_CreateRenderer(window, -1, 0);
 
     SDL_Rect Rect[fieldX][fieldY];
     const int fieldWidth = (windowSizeX-(distanceBetweenCells*(fieldX+1)))/fieldX;
     const int fieldHeight = (windowSizeY-(distanceBetweenCells*(fieldY+1)))/fieldY;
+    int marginX = (windowSizeX - ((distanceBetweenCells*(fieldX+1))+(fieldX*fieldWidth)))/2;
+    int marginY = (windowSizeY - ((distanceBetweenCells*(fieldY+1))+(fieldY*fieldHeight)))/2;
 
-    // printf("W: %d, H: %d\n",fieldWidth,fieldHeight);
+    // printf("marginX: %d\n",marginX);
+    // printf("marginY: %d\n",marginY);
+
+    // printf("fieldWidth: %d, fieldHeight: %d\n",fieldWidth,fieldHeight);
     int sx,sy;
     for(int x = 0; x < fieldX; x++){
       for(int y = 0; y < fieldY; y++){
-        sx = (distanceBetweenCells*(x+1))+(x*fieldWidth);
-        sy = (distanceBetweenCells*(y+1))+(y*fieldHeight);
+        sx = marginX + (distanceBetweenCells*(x+1))+(x*fieldWidth);
+        sy = marginY + (distanceBetweenCells*(y+1))+(y*fieldHeight);
         // printf("%d x %d {%d, %d, %d, %d}\n",x,y,sx,sy,fieldWidth,fieldHeight);
         Rect[x][y] = {sx, sy, fieldWidth, fieldHeight};
       }
@@ -284,7 +290,7 @@ int main(int argc, char* argv[])
 
       SDL_RenderPresent(renderer);
 
-      SDL_Delay(2000);
+      SDL_Delay(5000);
       if(iteration >= 1)
         end = true;
     }while(!end); 
