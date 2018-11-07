@@ -258,12 +258,8 @@ int main(int argc, char* argv[])
       for(int y = 0; y < fieldY; y++){
         sx = (distanceBetweenCells*(x+1))+(x*fieldWidth);
         sy = (distanceBetweenCells*(y+1))+(y*fieldHeight);
-        printf("%d x %d {%d, %d, %d, %d}\n",x,y,sx,sy,fieldWidth,fieldHeight);
-        Rect[x][y] = {
-          sx,
-          sy,
-          fieldWidth,
-          fieldHeight};
+        // printf("%d x %d {%d, %d, %d, %d}\n",x,y,sx,sy,fieldWidth,fieldHeight);
+        Rect[x][y] = {sx, sy, fieldWidth, fieldHeight};
       }
     }
 
@@ -284,15 +280,6 @@ int main(int argc, char* argv[])
           SDL_RenderFillRect(renderer,&Rect[x][y]);
         }
       }
-
-      // SDL_RenderFillRect(renderer,&Rect[0][0]);      
-      // SDL_SetRenderDrawColor(renderer,0,255,255,255);
-      // SDL_RenderFillRect(renderer,&Rect[0][1]);
-
-      // SDL_RenderDrawLine();
-
-      //SDL_Rect Rect = {0,0,10,20};
-      //SDL_RenderFillRect(renderer,&Rect);
 
       SDL_RenderPresent(renderer);
 
