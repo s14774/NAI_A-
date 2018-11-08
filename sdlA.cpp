@@ -47,13 +47,13 @@ bool isPointInsideGrid(Point p, int fieldX, int fieldY){
   return (p.x >= 0) && (p.x < fieldX) && (p.y >= 0) && (p.y < fieldY);
 }
 
-bool isPointNotBlocked(int **grid, int x, int y){
-  return (grid[x][y] == 0);
-}
+// bool isPointNotBlocked(int **grid, int x, int y){
+//   return (grid[x][y] == 0);
+// }
 
 bool isPointDestination(){}
 
-int aStarSearchNextMove(Point **grid, Point destination, std::vector<Coordinates> openList, int fieldX, int fieldY){
+int aStarSearchNextMove(int fieldX, int fieldY, Point (*grid)[fieldY], Point destination, std::vector<Coordinates> openList){
 
   if(openList.size() == 0 ){
     return 1;
@@ -72,15 +72,17 @@ int aStarSearchNextMove(Point **grid, Point destination, std::vector<Coordinates
   //Remove this point from openList
   openList.erase(openList.begin() + n);
 
-
-
-
-
-
-  if(!isPointInsideGrid(grid[x][y], fieldX, fieldY)){
-    printf("ERR: Point is outside field!");
-    return;
+  for(int x = -1; x <= 1; x++){
+    for(int y = -1; y <= 1; y++){
+      if(x==0 && y==0){
+        continue;
+      }
+      if(!isPointInsideGrid(grid[x][y], fieldX, fieldY)){
+        continue;
+      }
+    }
   }
+
 
 
 
@@ -316,7 +318,7 @@ int main(int argc, char* argv[])
 
       SDL_RenderPresent(renderer);
 
-      aStarSearchNextMove();
+      aStarSearchNextMove(grid[fieldX][fieldY],endPoint,openList,fieldX,fieldY);
 
       SDL_Delay(1000);
       if(iteration >= 1)
