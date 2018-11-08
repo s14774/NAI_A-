@@ -8,13 +8,8 @@
 
 // #define distanceBetweenCells 2
 
-// // <x, y>
+// <x, y>
 typedef std::pair<int, int> Coordinates;
-// // <f, <x, y>>
-// // f = g + h
-// // g(Point) = distance(start, Point)
-// // h(Point) = expected distance (Point, end)
-// typedef std::pair<double, std::pair<int, int>> fPoint; 
 
 struct Point {
   Point() : x(-1), y(-1), 
@@ -32,6 +27,7 @@ struct Point {
   // 2 = open
   // 3 = start
   // 4 = end
+  // 5 = closed
   int status;
 };
 
@@ -39,57 +35,74 @@ bool isPointInsideGrid(int x, int y, int fieldX, int fieldY){
   return (x >= 0) && (x < fieldX) && (y >= 0) && (y < fieldY);
 }
 
-// bool isPointInsideGrid(std::pair<int, int> p){
-//   return (p.first >= 0) && (p.first < fieldX) && (p.second >= 0) && (p.second < fieldY);
-// }
-
-bool isPointInsideGrid(Point p, int fieldX, int fieldY){
-  return (p.x >= 0) && (p.x < fieldX) && (p.y >= 0) && (p.y < fieldY);
+bool isPointNotBlocked(std::vector<std::vector<Point>> &grid, int x, int y){
+  return (grid[x][y].status == 0 || grid[x][y].status == 4);
 }
 
-// bool isPointNotBlocked(int **grid, int x, int y){
-//   return (grid[x][y] == 0);
-// }
-
-bool isPointDestination(){}
-
-int aStarSearchNextMove(int fieldX, int fieldY, Point (*grid)[fieldY], Point destination, std::vector<Coordinates> openList){
+int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> &grid, Point destination, std::vector<Coordinates> &openList){
 
   if(openList.size() == 0 ){
-    return 1;
+    return -1;
   }
+
+//D
+  printf("openList: ");
+  for(int i=0; i<openList.size(); i++){
+    printf("%d,%d, ", openList[i].first, openList[i].second);
+  }  
+  printf("\n");
+//D
 
   //Get Point from openList with lowest f param.
-  Coordinates pointWithLowestF = openList[0];
+  Coordinates pointCoordinatesWithLowestF = openList[0];
   int n = 0;
   for(int i=1; i<openList.size(); i++){
-    if(grid[openList[i].first][openList[i].second].f < grid[pointWithLowestF.first][pointWithLowestF.second].f){
-      pointWithLowestF = openList[i];
+    if(grid[openList[i].first][openList[i].second].f < grid[pointCoordinatesWithLowestF.first][pointCoordinatesWithLowestF.second].f){
+      pointCoordinatesWithLowestF = openList[i];
       n = i;
     }
-  }
-  
+  }  
+
   //Remove this point from openList
   openList.erase(openList.begin() + n);
+  Point &pointWithLowestF = grid[pointCoordinatesWithLowestF.first][pointCoordinatesWithLowestF.second];
+  pointWithLowestF.status = 5;
 
+  printf("Trying: %d %d\n",pointWithLowestF.x, pointWithLowestF.y);
   for(int x = -1; x <= 1; x++){
     for(int y = -1; y <= 1; y++){
       if(x==0 && y==0){
         continue;
       }
-      if(!isPointInsideGrid(grid[x][y], fieldX, fieldY)){
+      if(!isPointInsideGrid(pointWithLowestF.x + x, pointWithLowestF.y + y, fieldX, fieldY)){
         continue;
+      }
+      if(!isPointNotBlocked(grid, pointWithLowestF.x + x, pointWithLowestF.y + y)){
+        continue;
+      }
+      Point &checkingPoint = grid[pointWithLowestF.x + x][pointWithLowestF.y + y];
+      checkingPoint.x = pointWithLowestF.x + x;
+      checkingPoint.y = pointWithLowestF.y + y;
+      checkingPoint.parentX = pointWithLowestF.x;
+      checkingPoint.parentY = pointWithLowestF.y;
+      checkingPoint.g = pointWithLowestF.g + ((double)sqrt((x*x)+(y*y)));
+      checkingPoint.h = ((double)sqrt((x-destination.x)*(x-destination.x)+(y-destination.y)*(y-destination.y)));
+      checkingPoint.f = checkingPoint.g + checkingPoint.h;
+      checkingPoint.status = 2;
+      Coordinates checkingPointCoordinates;
+      checkingPointCoordinates.first = checkingPoint.x;
+      checkingPointCoordinates.second = checkingPoint.y;
+      openList.push_back(checkingPointCoordinates);
+      printf("PKT OK: %d x %d, G: %.1f, H: %.1f, F: %.1f\n",checkingPoint.x, checkingPoint.y, checkingPoint.g, checkingPoint.h, checkingPoint.f);
+      if(checkingPoint.x == destination.x && checkingPoint.y == destination.y){
+        printf("At destination!\n");
+        return 1;
       }
     }
   }
 
 
-
-
-}
-
-double getHParam(int x, int y, Point p){
-  return ((double)sqrt((x-p.x)*(x-p.x)+(y-p.y)*(y-p.y)));
+  return 0;
 }
 
 int countCharQuantity(std::string s, char c){
@@ -206,7 +219,11 @@ int main(int argc, char* argv[])
   endPoint.x = table[0];
   endPoint.y = table[1];
 
-  Point grid[fieldX][fieldY];
+  // Point grid[fieldX][fieldY];
+  std::vector<std::vector<Point>> grid(fieldY);
+  for(int y = 0; y < fieldY; y++){
+    grid[y] = std::vector<Point>(fieldX);
+  }
 
   // delete[] table;
   // int table[fieldY];
@@ -233,8 +250,13 @@ int main(int argc, char* argv[])
   }
 
   //Start point to grid
-  grid[startPoint.x][startPoint.y].status = 3;
+  startPoint.f = 0;
+  startPoint.g = 0;
+  startPoint.h = 0;
+  startPoint.status = 3;
+  grid[startPoint.x][startPoint.y] = startPoint;
   //End point to grid
+  grid[endPoint.x][endPoint.y] = endPoint;
   grid[endPoint.x][endPoint.y].status = 4;
 
   //Raport
@@ -296,7 +318,11 @@ int main(int argc, char* argv[])
       }
     }
 
-    std::vector<Coordinates> openList; 
+    std::vector<Coordinates> openList;
+    Coordinates startPointCordinates;
+    startPointCordinates.first = startPoint.x;
+    startPointCordinates.second = startPoint.y;
+    openList.push_back(startPointCordinates);
 
     do{
       printf("DO %d!\n",++iteration);
@@ -311,17 +337,18 @@ int main(int argc, char* argv[])
             case 2: SDL_SetRenderDrawColor(renderer,255,255,0,255); break;
             case 3: SDL_SetRenderDrawColor(renderer,0,255,0,255); break;
             case 4: SDL_SetRenderDrawColor(renderer,0,0,255,255); break;
+            case 5: SDL_SetRenderDrawColor(renderer,0,255,255,255); break;
           }
           SDL_RenderFillRect(renderer,&Rect[x][y]);
         }
       }
 
       SDL_RenderPresent(renderer);
-
-      aStarSearchNextMove(grid[fieldX][fieldY],endPoint,openList,fieldX,fieldY);
+      int status = 0; // -1 error, 0 continue, 1 end;
+      status = aStarSearchNextMove(fieldX, fieldY, grid, endPoint, openList);
 
       SDL_Delay(1000);
-      if(iteration >= 1)
+      if(status != 0)
         end = true;
     }while(!end); 
 
