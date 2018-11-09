@@ -203,6 +203,9 @@ int main(int argc, char* argv[])
   else{
     hFactor = 1;
   }
+  std::string windowNameString = "A* H: " + std::to_string(hFactor);
+  char * windowName = new char [windowNameString.length()+1];
+  strcpy(windowName, windowNameString.c_str());
 
   std::string line;
   std::ifstream file (argv[1]);
@@ -325,7 +328,7 @@ int main(int argc, char* argv[])
     printf("SDL_Error: %s\n", SDL_GetError());
   }
   else{
-    window = SDL_CreateWindow("A*",SDL_WINDOWPOS_UNDEFINED,
+    window = SDL_CreateWindow(windowName,SDL_WINDOWPOS_UNDEFINED,
       SDL_WINDOWPOS_UNDEFINED,
       windowSizeX,windowSizeY,
       SDL_WINDOW_SHOWN);
