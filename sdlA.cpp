@@ -39,19 +39,19 @@ bool isPointNotBlocked(std::vector<std::vector<Point>> &grid, int x, int y){
   return (grid[x][y].status == 0 || grid[x][y].status == 4);
 }
 
-int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> &grid, Point destination, std::vector<Coordinates> &openList){
+int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> &grid, Point destination, std::vector<Coordinates> &openList, int hFactor = 2){
 
   if(openList.size() == 0 ){
     return -1;
   }
 
-//D
-  printf("openList: ");
-  for(int i=0; i<openList.size(); i++){
-    printf("%d,%d, ", openList[i].first, openList[i].second);
-  }  
-  printf("\n");
-//D
+// //D
+//   printf("openList: ");
+//   for(int i=0; i<openList.size(); i++){
+//     printf("%d,%d, ", openList[i].first, openList[i].second);
+//   }  
+//   printf("\n");
+// //D
 
   //Get Point from openList with lowest f param.
   Coordinates pointCoordinatesWithLowestF = openList[0];
@@ -86,9 +86,7 @@ int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> 
       checkingPoint.parentX = pointWithLowestF.x;
       checkingPoint.parentY = pointWithLowestF.y;
       checkingPoint.g = pointWithLowestF.g + ((double)sqrt((x*x)+(y*y)));
-      //D
-      // printf("D h: %d,%d ,%d %d %.2f\n",x-destination.x,y-destination.y,sqrt((x-destination.x)*(x-destination.x)+(y-destination.y)-(y-destination.y)));
-      checkingPoint.h = ((double)sqrt((checkingPoint.x-destination.x)*(checkingPoint.x-destination.x)+(checkingPoint.y-destination.y)*(checkingPoint.y-destination.y)));
+      checkingPoint.h = ((double)sqrt((checkingPoint.x-destination.x)*(checkingPoint.x-destination.x)+(checkingPoint.y-destination.y)*(checkingPoint.y-destination.y)))*hFactor;
       checkingPoint.f = checkingPoint.g + checkingPoint.h;
       checkingPoint.status = 2;
       Coordinates checkingPointCoordinates;
@@ -102,7 +100,6 @@ int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> 
       }
     }
   }
-
 
   return 0;
 }
@@ -122,6 +119,28 @@ int countCharQuantity(std::string s, char c){
 
 int char2int(char c){
   return(c-'0');
+}
+
+int string2int(std::string s){
+  char * charstring = new char [s.length()+1];
+  strcpy(charstring, s.c_str());
+  int tempValu = 0;
+  bool negative = false;
+  for(int i=0;i<s.length();i++){
+    if(charstring[i]>='0' && charstring[i]<='9'){
+      tempValu=tempValu*10+char2int(charstring[i]);
+    }
+    if(charstring[i]=='-'){
+      negative = ! negative;
+    }
+
+  }
+  if(negative){
+    return -tempValu;
+  }
+  else{
+    return tempValu;
+  }
 }
 
 void LineToIntArray(std::string s, int* array){
@@ -157,25 +176,46 @@ int CSVErrorGridSize(){
   return 1;
 }
 
+int ParamError(char *c){
+  printf("Usage: %s filename.csv [WaitTime] [h param]\n",c);
+  return 1;
+}
+
 int main(int argc, char* argv[])
 {
-  if (argc != 2) {
-    printf("Usage: %s filename.csv\n",argv[0]);
-    return 1;
+  if (argc < 2 || argc > 4) {
+    return ParamError(argv[0]);
+  }
+
+  int SDL_DelayTime;
+  if(argc >= 3){
+    SDL_DelayTime = string2int(argv[2]);
+  }
+  else{
+    SDL_DelayTime = 50;
+  }
+  // printf("SDL_DelayTime: %d\n",SDL_DelayTime);
+
+  int hFactor;
+  if(argc >= 4){
+    hFactor = string2int(argv[3]);
+  }
+  else{
+    hFactor = 1;
   }
 
   std::string line;
   std::ifstream file (argv[1]);
 
   if (! file.is_open()){
-    printf("File is not exist!\nUsage: %s filename.csv\n",argv[0]);
-    return 1;
+    printf("File is not exist!\n");
+    return ParamError(argv[0]);
   }
 
   //Get X,Y board size
   if (! file.good()){
-    printf("File is empty!\nUsage: %s filename.csv\n",argv[0]);
-    return 1;
+    printf("File is empty!\n");
+    return ParamError(argv[0]);
   }
   getline (file,line);
   int comas = countCharQuantity(line,',');
@@ -347,9 +387,9 @@ int main(int argc, char* argv[])
 
       SDL_RenderPresent(renderer);
       int status = 0; // -1 error, 0 continue, 1 end;
-      status = aStarSearchNextMove(fieldX, fieldY, grid, endPoint, openList);
+      status = aStarSearchNextMove(fieldX, fieldY, grid, endPoint, openList, hFactor);
 
-      SDL_Delay(50);
+      SDL_Delay(SDL_DelayTime);
       if(status != 0)
         end = true;
     }while(!end); 
