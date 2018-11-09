@@ -86,7 +86,9 @@ int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> 
       checkingPoint.parentX = pointWithLowestF.x;
       checkingPoint.parentY = pointWithLowestF.y;
       checkingPoint.g = pointWithLowestF.g + ((double)sqrt((x*x)+(y*y)));
-      checkingPoint.h = ((double)sqrt((x-destination.x)*(x-destination.x)+(y-destination.y)*(y-destination.y)));
+      //D
+      // printf("D h: %d,%d ,%d %d %.2f\n",x-destination.x,y-destination.y,sqrt((x-destination.x)*(x-destination.x)+(y-destination.y)-(y-destination.y)));
+      checkingPoint.h = ((double)sqrt((checkingPoint.x-destination.x)*(checkingPoint.x-destination.x)+(checkingPoint.y-destination.y)*(checkingPoint.y-destination.y)));
       checkingPoint.f = checkingPoint.g + checkingPoint.h;
       checkingPoint.status = 2;
       Coordinates checkingPointCoordinates;
@@ -337,7 +339,7 @@ int main(int argc, char* argv[])
             case 2: SDL_SetRenderDrawColor(renderer,255,255,0,255); break;
             case 3: SDL_SetRenderDrawColor(renderer,0,255,0,255); break;
             case 4: SDL_SetRenderDrawColor(renderer,0,0,255,255); break;
-            case 5: SDL_SetRenderDrawColor(renderer,0,255,255,255); break;
+            case 5: SDL_SetRenderDrawColor(renderer,50,120,120,255); break;
           }
           SDL_RenderFillRect(renderer,&Rect[x][y]);
         }
@@ -347,7 +349,7 @@ int main(int argc, char* argv[])
       int status = 0; // -1 error, 0 continue, 1 end;
       status = aStarSearchNextMove(fieldX, fieldY, grid, endPoint, openList);
 
-      SDL_Delay(1000);
+      SDL_Delay(50);
       if(status != 0)
         end = true;
     }while(!end); 
