@@ -39,9 +39,10 @@ bool isPointNotBlocked(std::vector<std::vector<Point>> &grid, int x, int y){
   return (grid[x][y].status == 0 || grid[x][y].status == 4);
 }
 
-int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> &grid, Point destination, std::vector<Coordinates> &openList, int hFactor = 2){
+int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> &grid, Point destination, std::vector<Coordinates> &openList, float hFactor){
 
   if(openList.size() == 0 ){
+      printf("Way not found!\n");
     return -1;
   }
 
@@ -93,7 +94,7 @@ int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> 
       checkingPointCoordinates.first = checkingPoint.x;
       checkingPointCoordinates.second = checkingPoint.y;
       openList.push_back(checkingPointCoordinates);
-      printf("PKT OK: %d x %d, G: %.1f, H: %.1f, F: %.1f\n",checkingPoint.x, checkingPoint.y, checkingPoint.g, checkingPoint.h, checkingPoint.f);
+      printf("PKT OK: %d x %d, G: %.1f, H: %.2f, F: %.1f\n",checkingPoint.x, checkingPoint.y, checkingPoint.g, checkingPoint.h, checkingPoint.f);
       if(checkingPoint.x == destination.x && checkingPoint.y == destination.y){
         printf("At destination!\n");
         return 1;
@@ -139,6 +140,39 @@ int string2int(std::string s){
     return -tempValu;
   }
   else{
+    return tempValu;
+  }
+}
+
+float string2float(std::string s){
+  char * charstring = new char [s.length()+1];
+  strcpy(charstring, s.c_str());
+  float tempValu = 0;
+  bool negative = false;
+  int afterDot = 0;
+  for(int i=0;i<s.length();i++){
+    if(charstring[i]>='0' && charstring[i]<='9'){
+      if(afterDot == 0){
+        tempValu=tempValu*10+char2int(charstring[i]);
+      }
+      else{
+        tempValu=tempValu+(char2int(charstring[i])*(1/pow(10,afterDot)));
+        afterDot+=1;
+      }
+    }
+    if(charstring[i]=='-'){
+      negative = ! negative;
+    }
+    if(charstring[i]=='.' && afterDot == 0){
+      afterDot = 1;
+    }
+
+  }
+  if(negative){
+    return -tempValu;
+  }
+  else{
+    printf("s2f: %.5f\n",tempValu);
     return tempValu;
   }
 }
@@ -196,9 +230,9 @@ int main(int argc, char* argv[])
   }
   // printf("SDL_DelayTime: %d\n",SDL_DelayTime);
 
-  int hFactor;
+  float hFactor;
   if(argc >= 4){
-    hFactor = string2int(argv[3]);
+    hFactor = string2float(argv[3]);
   }
   else{
     hFactor = 1;
@@ -305,6 +339,7 @@ int main(int argc, char* argv[])
   grid[endPoint.x][endPoint.y].status = 4;
 
   //Raport
+  printf("H: %.2f\n",hFactor);
   printf("B: %d x %d\n",fieldX,fieldY);
   printf("S: %d x %d\n",startPoint.x,startPoint.y);
   printf("E: %d x %d\n",endPoint.x,endPoint.y);
