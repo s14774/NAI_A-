@@ -39,6 +39,10 @@ bool isPointNotBlocked(std::vector<std::vector<Point>> &grid, int x, int y){
   return (grid[x][y].status == 0 || grid[x][y].status == 4);
 }
 
+void findFinalWayBack(std::vector<std::vector<Point>> &grid, Point parentPoint){
+  printf("PP: %d,%d\n",parentPoint.parentX,parentPoint.parentY);
+}
+
 int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> &grid, Point destination, std::vector<Coordinates> &openList, float hFactor){
 
   if(openList.size() == 0 ){
@@ -97,11 +101,11 @@ int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> 
       printf("PKT OK: %d x %d, G: %.1f, H: %.2f, F: %.1f\n",checkingPoint.x, checkingPoint.y, checkingPoint.g, checkingPoint.h, checkingPoint.f);
       if(checkingPoint.x == destination.x && checkingPoint.y == destination.y){
         printf("At destination!\n");
+        destination = checkingPoint;
         return 1;
       }
     }
   }
-
   return 0;
 }
 
@@ -172,7 +176,6 @@ float string2float(std::string s){
     return -tempValu;
   }
   else{
-    printf("s2f: %.5f\n",tempValu);
     return tempValu;
   }
 }
@@ -403,6 +406,7 @@ int main(int argc, char* argv[])
     startPointCordinates.first = startPoint.x;
     startPointCordinates.second = startPoint.y;
     openList.push_back(startPointCordinates);
+    bool atDestination = false;
 
     do{
       printf("DO %d!\n",++iteration);
@@ -425,11 +429,21 @@ int main(int argc, char* argv[])
 
       SDL_RenderPresent(renderer);
       int status = 0; // -1 error, 0 continue, 1 end;
-      status = aStarSearchNextMove(fieldX, fieldY, grid, endPoint, openList, hFactor);
+      if(!atDestination){
+        status = aStarSearchNextMove(fieldX, fieldY, grid, endPoint, openList, hFactor);
+      }
+      else{
+        
+      }
 
       SDL_Delay(SDL_DelayTime);
-      if(status != 0)
-        end = true;
+      switch(status){
+        case -1: end = true; break;
+        case 1: atDestination = true; end = true; break;
+      }
+
+      printf("STATUS: %d\n",status);
+
     }while(!end); 
 
     SDL_DestroyRenderer(renderer);
