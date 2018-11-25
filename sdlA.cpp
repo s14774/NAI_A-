@@ -407,6 +407,7 @@ int main(int argc, char* argv[])
     startPointCordinates.second = startPoint.y;
     openList.push_back(startPointCordinates);
     bool atDestination = false;
+    const Uint8* keyboardStatus = SDL_GetKeyboardState(NULL);
 
     do{
       printf("DO %d!\n",++iteration);
@@ -437,6 +438,12 @@ int main(int argc, char* argv[])
       }
 
       SDL_Delay(SDL_DelayTime);
+      SDL_PumpEvents();
+      if(keyboardStatus[SDL_SCANCODE_ESCAPE]){
+        printf("ESC\n");
+        end = true;
+      }
+      
       switch(status){
         case -1: end = true; break;
         case 1: atDestination = true; end = true; break;

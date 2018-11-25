@@ -6,9 +6,6 @@
 #define windowSizeX 800
 #define windowSizeY 800
 
-// #define distanceBetweenCells 2
-
-// <x, y>
 typedef std::pair<int, int> Coordinates;
 
 struct Point {
@@ -44,19 +41,10 @@ void findFinalWayBack(std::vector<std::vector<Point>> &grid, Point parentPoint){
 }
 
 int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> &grid, Point destination, std::vector<Coordinates> &openList, float hFactor){
-
   if(openList.size() == 0 ){
       printf("Way not found!\n");
     return -1;
   }
-
-// //D
-//   printf("openList: ");
-//   for(int i=0; i<openList.size(); i++){
-//     printf("%d,%d, ", openList[i].first, openList[i].second);
-//   }  
-//   printf("\n");
-// //D
 
   //Get Point from openList with lowest f param.
   Coordinates pointCoordinatesWithLowestF = openList[0];
@@ -407,6 +395,7 @@ int main(int argc, char* argv[])
     startPointCordinates.second = startPoint.y;
     openList.push_back(startPointCordinates);
     bool atDestination = false;
+    const Uint8* keyboardStatus = SDL_GetKeyboardState(NULL);
 
     do{
       printf("DO %d!\n",++iteration);
@@ -437,6 +426,11 @@ int main(int argc, char* argv[])
       }
 
       SDL_Delay(SDL_DelayTime);
+      SDL_PumpEvents();
+      if(keyboardStatus[SDL_SCANCODE_ESCAPE]){
+        printf("ESC\n");
+        end = true;
+      }
       switch(status){
         case -1: end = true; break;
         case 1: atDestination = true; end = true; break;
