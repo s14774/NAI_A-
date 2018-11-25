@@ -1,6 +1,8 @@
 #include<SDL2/SDL.h>
 #include<stdio.h>
 #include<bits/stdc++.h> 
+#include <chrono>
+
 // using namespace std; 
 
 #define windowSizeX 800
@@ -212,14 +214,14 @@ int main(int argc, char* argv[])
     return ParamError(argv[0]);
   }
 
-  int SDL_DelayTime;
+  float timeBetweenMoves;
   if(argc >= 3){
-    SDL_DelayTime = string2int(argv[2]);
+    timeBetweenMoves = string2float(argv[2]);
   }
   else{
-    SDL_DelayTime = 50;
+    timeBetweenMoves = 0.05;
   }
-  // printf("SDL_DelayTime: %d\n",SDL_DelayTime);
+  // printf("timeBetweenMoves: %d\n",timeBetweenMoves);
 
   float hFactor;
   if(argc >= 4){
@@ -396,6 +398,8 @@ int main(int argc, char* argv[])
     openList.push_back(startPointCordinates);
     bool atDestination = false;
     const Uint8* keyboardStatus = SDL_GetKeyboardState(NULL);
+    auto timeOfLastFrame = std::chrono::system_clock::now();
+    std::chrono::duration<double> timeDelta;
 
     do{
       printf("DO %d!\n",++iteration);
@@ -425,12 +429,19 @@ int main(int argc, char* argv[])
         
       }
 
-      SDL_Delay(SDL_DelayTime);
-      SDL_PumpEvents();
-      if(keyboardStatus[SDL_SCANCODE_ESCAPE]){
-        printf("ESC\n");
-        end = true;
-      }
+      do{
+        timeDelta = std::chrono::system_clock::now() - timeOfLastFrame;
+        // printf("TD: %f\n",timeDelta.count());
+        SDL_Delay(10);
+
+        SDL_PumpEvents();
+        if(keyboardStatus[SDL_SCANCODE_ESCAPE]){
+          printf("ESC\n");
+          end = true;
+        }
+      }while(timeDelta.count() <= timeBetweenMoves);
+      timeOfLastFrame = std::chrono::system_clock::now();
+      
       switch(status){
         case -1: end = true; break;
         case 1: atDestination = true; end = true; break;
