@@ -39,8 +39,18 @@ bool isPointNotBlocked(std::vector<std::vector<Point>> &grid, int x, int y){
   return (grid[x][y].status == 0 || grid[x][y].status == 4);
 }
 
-void findFinalWayBack(std::vector<std::vector<Point>> &grid, Point parentPoint){
-  printf("PP: %d,%d\n",parentPoint.parentX,parentPoint.parentY);
+void findFinalWayBack(std::vector<std::vector<Point>> &grid, Point point){
+printf("Droga od końca: \n");
+do {
+    if (point.status == 3) {
+      printf("[%d,%d]\n",point.x,point.y);
+      break;
+    }
+    else {
+      printf("[%d,%d], ",point.x,point.y);
+      point = grid[point.parentX][point.parentY];
+    }
+  } while (true);
 }
 
 int aStarSearchNextMove(int fieldX, int fieldY, std::vector<std::vector<Point>> &grid, Point destination, std::vector<Coordinates> &openList, float hFactor){
@@ -433,9 +443,6 @@ int main(int argc, char* argv[])
       if(!atDestination){
         status = aStarSearchNextMove(fieldX, fieldY, grid, endPoint, openList, hFactor);
       }
-      else{
-        
-      }
 
       SDL_Delay(SDL_DelayTime);
       SDL_PumpEvents();
@@ -446,13 +453,17 @@ int main(int argc, char* argv[])
       
       switch(status){
         case -1: end = true; break;
-        case 1: atDestination = true; end = true; break;
+        case 1: atDestination = true; end = true;
       }
 
       printf("STATUS: %d\n",status);
 
     }while(!end); 
 
+    if(atDestination){
+      grid[startPoint.x][startPoint.y].status = 3;
+      findFinalWayBack(grid, grid[endPoint.x][endPoint.y]);
+    }
     SDL_DestroyRenderer(renderer);
   }
 
