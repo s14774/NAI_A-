@@ -439,6 +439,7 @@ int main(int argc, char* argv[])
           printf("ESC\n");
           end = true;
         }
+        if()
       }while(timeDelta.count() <= timeBetweenMoves);
       timeOfLastFrame = std::chrono::system_clock::now();
       
